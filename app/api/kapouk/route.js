@@ -1,7 +1,7 @@
 export async function POST(req) {
   try {
     const { messages } = await req.json()
-    const system = `Tu es Kapouk, agent IA de Maxime Pichon, agent immobilier à Bordeaux. Tu gères son CRM Dodey. Réponds en français, sois concis et efficace. Activités: CAKM (locaux Airbnb avec Kevin), UNLOOP (leads), Perso.`
+    const system = `Tu es Kapouk, agent IA de Maxime Pichon, agent immobilier à Bordeaux. Tu gères son CRM Dodey. Réponds en français, sois concis et efficace. Activités: CAKM (locaux Airbnb avec Kevin), HOMELOOP (leads), Perso.`
     const contents = [
       { role: 'user', parts: [{ text: system }] },
       { role: 'model', parts: [{ text: 'Compris, je suis Kapouk.' }] },

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 
 const STATUTS = ['Détecté', 'En cours', 'Visité', 'Offre', 'Compromis', 'Signé', 'Clôturé', 'Abandonné']
-const SOURCES = ['Tous', 'CAKM', 'UNLOOP', 'Inter-agence', 'Perso']
+const SOURCES = ['Tous', 'CAKM', 'HOMELOOP', 'Inter-agence', 'Perso']
 const STATUT_COLORS = {
   'Détecté': '#8890C0', 'En cours': '#1A6FFF', 'Visité': '#FF9F0A',
   'Offre': '#FF2080', 'Compromis': '#AF52DE', 'Signé': '#39FF14',
@@ -149,7 +149,7 @@ function BienCard({ bien, onClick }) {
 }
 
 function SourceTag({ source }) {
-  const colors = { CAKM: ['#EEEDFE','#3C3489'], UNLOOP: ['#E1F5EE','#085041'], 'Inter-agence': ['#FEF3E2','#7A4F00'], Perso: ['#FFF0E8','#7A3000'], Inconnu: ['#F0F0F0','#666'] }
+  const colors = { CAKM: ['#EEEDFE','#3C3489'], HOMELOOP: ['#E1F5EE','#085041'], 'Inter-agence': ['#FEF3E2','#7A4F00'], Perso: ['#FFF0E8','#7A3000'], Inconnu: ['#F0F0F0','#666'] }
   const [bg, color] = colors[source] || ['#F0F0F0','#666']
   return <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 100, background: bg, color }}>{source}</span>
 }

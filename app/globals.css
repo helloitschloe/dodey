@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --bg: #0C0D1B;
+  --card: #13142A;
+  --line: #1E2040;
+  --blue: #1A6FFF;
+  --bdim: #1A6FFF18;
+  --bmid: #1A6FFF30;
+  --pink: #FF2080;
+  --pdim: #FF208018;
+  --pmid: #FF208030;
+  --green: #39FF14;
+  --gdim: #39FF1418;
+  --gmid: #39FF1430;
+  --muted: #40446B;
+  --text: #E8EAF6;
+  --dim: #8890C0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', system-ui, sans-serif;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+
+/* Tags */
+.tag { display: inline-block; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 100px; }
+.tag-cakm { background: #EEEDFE; color: #3C3489; }
+.tag-unloop { background: #E1F5EE; color: #085041; }
+.tag-inter { background: #FEF3E2; color: #7A4F00; }
+.tag-perso { background: #FFF0E8; color: #7A3000; }
+
+/* Animations */
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }

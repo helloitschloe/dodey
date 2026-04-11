@@ -1,4 +1,4 @@
-import { createBien, createContact, updateBien } from '@/lib/notion'
+import { createBien, createContact, updateBien, getBiens, getContacts } from '@/lib/notion'
 
 async function callGemini(contents) {
   const res = await fetch(
@@ -17,11 +17,32 @@ export async function POST(req) {
     const systemPrompt = `Tu es Kapouk, agent IA de Maxime, agent immobilier a Bordeaux.
 Tu geres son CRM Dodey connecte a Notion.
 Sources: CAKM (locaux Airbnb avec Kevin, 2 commissions), HOMELOOP (leads), Perso.
-Inter-agence = case separee applicable a CAKM ou Perso.
-Statuts: A prospecter, No show, Prospecte, Estimation a envoyer, Estimation faite, Mandat signe, En ligne, Compromis, Vendu, Cloture.
+Inter-agence = applicable a CAKM ou Perso uniquement.
 
-Reponds UNIQUEMENT en JSON valide sans markdown:
-{"reply":"reponse courte en francais","actions":[{"type":"CREATE_BIEN","data":{"adresse":"adresse complete Bordeaux","source":"CAKM ou HOMELOOP ou Perso ou null","statut":"A prospecter","interAgence":false,"notes":null,"prixEstimation":null,"prixMandat":null,"honorairesEstimes":null,"honorairesReels":null,"honorairesCakm":null,"retrocessionCakm":null}}],"questions":[]}`
+STATUTS EXACTS (utilise exactement ces valeurs):
+"A prospecter", "No show", "Prospecte", "Estimation a envoyer", "Estimation faite", "Mandat signe", "En ligne", "Compromis", "Vendu", "Cloture"
+
+REGLES:
+- Quand source = CAKM ou Perso, demande toujours si inter-agence
+- Contact et telephone = CREATE_CONTACT separement, jamais dans Notes
+- Notes = uniquement informations sur le bien lui-meme
+
+Reponds UNIQUEMENT en JSON valide sans markdown ni texte autour:
+{
+  "reply": "reponse courte en francais",
+  "actions": [],
+  "questions": []
+}
+
+Actions possibles:
+CREATE_BIEN: {"type":"CREATE_BIEN","data":{"adresse":"adresse complete avec ville","source":"CAKM|HOMELOOP|Perso","statut":"A prospecter","interAgence":false,"notes":"infos sur le bien uniquement","prixEstimation":null,"prixMandat":null,"honorairesEstimes":null,"honorairesReels":null,"honorairesCakm":null,"retrocessionCakm":null}}
+
+CREATE_CONTACT: {"type":"CREATE_CONTACT","data":{"nom":"Prenom Nom","tel":"0600000000","email":null,"type":"Vendeur|Acheteur|Investisseur|Agent","budget":null,"notes":null}}
+
+UPDATE_BIEN: {"type":"UPDATE_BIEN","data":{"id":"id_notion","statut":"...","prixMandat":null}}
+
+Si info manquante pose une question dans "questions".
+Si pas d action: "actions":[]`
 
     const contents = [
       { role: 'user', parts: [{ text: systemPrompt }] },
@@ -54,19 +75,30 @@ Reponds UNIQUEMENT en JSON valide sans markdown:
           updated++
         }
       } catch(e) {
-        console.error('Action error:', e.message)
+        console.error('Action error:', action.type, e.message)
       }
     }
 
     let reply = parsed.reply || ''
-    if (created > 0) reply += '\n\n✓ ' + created + ' fiche' + (created > 1 ? 's' : '') + ' dans Notion.'
-    if (updated > 0) reply += '\n\n✓ ' + updated + ' fiche' + (updated > 1 ? 's' : '') + ' mise a jour.'
+    if (created > 0) reply += '\n\n' + created + ' fiche' + (created > 1 ? 's' : '') + ' creee' + (created > 1 ? 's' : '') + ' dans Notion.'
+    if (updated > 0) reply += '\n\n' + updated + ' fiche' + (updated > 1 ? 's' : '') + ' mise' + (updated > 1 ? 's' : '') + ' a jour.'
     if (parsed.questions?.length > 0) reply += '\n\n' + parsed.questions.join('\n')
 
     return Response.json({ reply })
-
   } catch (e) {
     console.error('Kapouk error:', e.message)
+    return Response.json({ error: e.message }, { status: 500 })
+  }
+}
+
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const type = searchParams.get('type')
+    if (type === 'biens') return Response.json(await getBiens())
+    if (type === 'contacts') return Response.json(await getContacts())
+    return Response.json({ error: 'type invalide' }, { status: 400 })
+  } catch(e) {
     return Response.json({ error: e.message }, { status: 500 })
   }
 }
